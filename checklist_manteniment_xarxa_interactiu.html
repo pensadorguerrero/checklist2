@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist Manteniment Xarxa</title>
+<style>
+:root{--blue:#0a3d62;--green:#2e8b57;--bg:#f4f6f8;--card:#fff;--border:#d8dee6;--text:#1f2933}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:20px}
+.container{max-width:1100px;margin:auto}
+header,.panel{background:var(--card);padding:20px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:16px}
+h1,h2,h3{color:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+label{display:block;margin:10px 0}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;box-sizing:border-box}
+textarea{min-height:80px}
+button{padding:10px 14px;border:none;border-radius:8px;background:var(--blue);color:white;cursor:pointer;font-weight:bold;margin:4px}
+button.secondary{background:#52606d} button.danger{background:#b91c1c} button.success{background:var(--green)}
+.section{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;background:#fff}
+.checkrow{display:flex;gap:10px;align-items:flex-start;padding:8px;border-bottom:1px solid #edf1f5}
+.checkrow input{width:auto;margin-top:3px}
+.progressbar{height:18px;background:#dbe3ea;border-radius:999px;overflow:hidden}
+.progressfill{height:100%;width:0%;background:var(--green);transition:.3s}
+.progressText{font-weight:bold;margin-top:8px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th,td{border:1px solid var(--border);padding:8px;text-align:left}
+th{background:#eaf2fb}.small{font-size:13px;color:#52606d}
+@media print{button{display:none}body{background:white}.panel,header{box-shadow:none;border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Checklist Interactiu de Manteniment de Xarxa</h1>
+<div>Manual d'administracio de xarxes · Versio 1.0</div>
+</header>
+
+<div class="panel">
+<h2>Dades del manteniment</h2>
+<div class="grid">
+<div><label>Tecnic responsable</label><select id="tecnic"><option value="">Selecciona tecnic</option><option>Dome</option><option>Dani</option><option>Pichel</option><option>Jose</option><option>Amanda</option><option>Ruben Pichel</option></select></div>
+<div><label>Data</label><input type="date" id="data"></div>
+<div><label>Equip / zona revisada</label><input type="text" id="zona" placeholder="Ex: Xarxa 192.168.11.0/24"></div>
+</div>
+<label>Observacions generals</label>
+<textarea id="observacions" placeholder="Escriu incidencies, proves realitzades o comentaris..."></textarea>
+</div>
+
+<div class="panel">
+<h2>Progres</h2>
+<div class="progressbar"><div class="progressfill" id="progressfill"></div></div>
+<div class="progressText" id="progressText">Progres: 0%</div>
+<button onclick="marcarTot()" class="success">Marcar tot</button>
+<button onclick="reiniciarChecklist()" class="secondary">Reiniciar checklist</button>
+<button onclick="guardarHistoric()">Guardar al historial</button>
+<button onclick="window.print()" class="secondary">Imprimir</button>
+</div>
+
+<div class="panel" id="checklist">
+<div class="section"><h3>Servidors</h3>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar servidor Windows 192.168.11.2 actiu</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar servidor Linux 192.168.11.5 actiu</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Verificar serveis DNS i DHCP</span></div>
+</div>
+
+<div class="section"><h3>Connectivitat</h3>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Ping al servidor Windows: 192.168.11.2</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Ping al servidor Linux: 192.168.11.5</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Ping al gateway: 192.168.11.1</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Ping a Internet: google.es</span></div>
+</div>
+
+<div class="section"><h3>DNS</h3>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Executar nslookup google.es</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar que retorna una adreca IP</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Verificar servidor DNS configurat</span></div>
+</div>
+
+<div class="section"><h3>DHCP</h3>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar IP assignada dins 192.168.11.0/24</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Renovar IP del client</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar servidor DHCP 192.168.11.2</span></div>
+</div>
+
+<div class="section"><h3>Firewall</h3>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar estat del firewall</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Verificar regles configurades</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar ports necessaris oberts</span></div>
+</div>
+
+<div class="section"><h3>Impressora de xarxa</h3>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar connexio amb la impressora 192.168.1.20</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Verificar cua d'impressio</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Revisar estat del toner</span></div>
+</div>
+
+<div class="section"><h3>Maquinari de xarxa</h3>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Revisar router</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Revisar switch</span></div>
+<div class="checkrow"><input type="checkbox" onchange="actualitzar()"> <span>Comprovar cablejat Ethernet i LEDs</span></div>
+</div>
+</div>
+
+<div class="panel">
+<h2>Historial de manteniment</h2>
+<p class="small">L'historial es guarda al navegador amb localStorage.</p>
+<button onclick="exportarCSV()" class="secondary">Exportar CSV</button>
+<button onclick="esborrarHistoric()" class="danger">Esborrar historial</button>
+<table><thead><tr><th>Data</th><th>Tecnic</th><th>Zona</th><th>Progres</th><th>Observacions</th></tr></thead><tbody id="taulaHistoric"></tbody></table>
+</div>
+</div>
+
+<script>
+const STORAGE_CHECKS = "checklist_xarxa_estat_v1";
+const STORAGE_HIST = "checklist_xarxa_historic_v1";
+document.getElementById("data").valueAsDate = new Date();
+
+function getChecks(){return Array.from(document.querySelectorAll('#checklist input[type="checkbox"]'));}
+function actualitzar(){
+ const checks=getChecks(), total=checks.length, marcats=checks.filter(c=>c.checked).length;
+ const percent=total?Math.round((marcats/total)*100):0;
+ document.getElementById("progressText").innerText=`Progres: ${percent}% (${marcats}/${total})`;
+ document.getElementById("progressfill").style.width=percent+"%";
+ localStorage.setItem(STORAGE_CHECKS, JSON.stringify(checks.map(c=>c.checked)));
+}
+function carregarChecks(){
+ const saved=JSON.parse(localStorage.getItem(STORAGE_CHECKS)||"[]");
+ getChecks().forEach((c,i)=>c.checked=!!saved[i]);
+ actualitzar();
+}
+function marcarTot(){getChecks().forEach(c=>c.checked=true);actualitzar();}
+function reiniciarChecklist(){getChecks().forEach(c=>c.checked=false);actualitzar();}
+function guardarHistoric(){
+ const tecnic=document.getElementById("tecnic").value||"No indicat";
+ const data=document.getElementById("data").value||new Date().toISOString().slice(0,10);
+ const zona=document.getElementById("zona").value||"No indicada";
+ const observacions=document.getElementById("observacions").value||"-";
+ const checks=getChecks(), total=checks.length, marcats=checks.filter(c=>c.checked).length;
+ const percent=total?Math.round((marcats/total)*100):0;
+ const registre={data,tecnic,zona,progres:percent+"%",observacions};
+ const hist=JSON.parse(localStorage.getItem(STORAGE_HIST)||"[]");
+ hist.unshift(registre);
+ localStorage.setItem(STORAGE_HIST, JSON.stringify(hist));
+ mostrarHistoric();
+ alert("Manteniment guardat al historial.");
+}
+function mostrarHistoric(){
+ const hist=JSON.parse(localStorage.getItem(STORAGE_HIST)||"[]");
+ const tbody=document.getElementById("taulaHistoric");
+ tbody.innerHTML="";
+ hist.forEach(r=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${r.data}</td><td>${r.tecnic}</td><td>${r.zona}</td><td>${r.progres}</td><td>${r.observacions}</td>`;
+  tbody.appendChild(tr);
+ });
+}
+function esborrarHistoric(){
+ if(confirm("Vols esborrar tot l'historial?")){
+  localStorage.removeItem(STORAGE_HIST);
+  mostrarHistoric();
+ }
+}
+function exportarCSV(){
+ const hist=JSON.parse(localStorage.getItem(STORAGE_HIST)||"[]");
+ if(hist.length===0){alert("No hi ha dades per exportar.");return;}
+ const cap=["Data","Tecnic","Zona","Progres","Observacions"];
+ const files=hist.map(r=>[r.data,r.tecnic,r.zona,r.progres,r.observacions]);
+ const csv=[cap,...files].map(row=>row.map(v=>`"${String(v).replaceAll('"','""')}"`).join(";")).join("\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url; a.download="historial_manteniment_xarxa.csv"; a.click();
+ URL.revokeObjectURL(url);
+}
+carregarChecks();
+mostrarHistoric();
+</script>
+</body>
+</html>
