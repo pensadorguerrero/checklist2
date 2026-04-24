@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<title>Checklist Manteniment Xarxa</title>
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f8;
+    padding: 20px;
+}
+h1 {
+    color: #0a3d62;
+}
+.section {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.progress {
+    margin: 20px 0;
+    font-weight: bold;
+}
+button {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    background: #0a3d62;
+    color: white;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>✅ Checklist Manteniment de Xarxa</h1>
+
+<div class="progress" id="progress">Progrés: 0%</div>
+
+<button onclick="marcarTot()">✔️ Marcar tot</button>
+<button onclick="reset()">🔄 Reiniciar</button>
+
+<div class="section">
+<h3>🖥️ Servidors</h3>
+<label><input type="checkbox" onchange="actualitzar()"> Servidor Windows actiu</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Servidor Linux actiu</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Serveis funcionant (DNS, DHCP...)</label><br>
+</div>
+
+<div class="section">
+<h3>🌐 Connectivitat</h3>
+<label><input type="checkbox" onchange="actualitzar()"> Ping servidor Windows</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Ping servidor Linux</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Ping gateway</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Ping Internet</label><br>
+</div>
+
+<div class="section">
+<h3>📡 DNS</h3>
+<label><input type="checkbox" onchange="actualitzar()"> nslookup correcte</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Resolució de noms OK</label><br>
+</div>
+
+<div class="section">
+<h3>📦 DHCP</h3>
+<label><input type="checkbox" onchange="actualitzar()"> IP assignada correctament</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Renovació IP OK</label><br>
+</div>
+
+<div class="section">
+<h3>🔐 Firewall</h3>
+<label><input type="checkbox" onchange="actualitzar()"> Firewall actiu</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Regles correctes</label><br>
+</div>
+
+<div class="section">
+<h3>🖨️ Impressora</h3>
+<label><input type="checkbox" onchange="actualitzar()"> Impressora accessible</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Estat correcte</label><br>
+</div>
+
+<div class="section">
+<h3>🔌 Maquinari</h3>
+<label><input type="checkbox" onchange="actualitzar()"> Router OK</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Switch OK</label><br>
+<label><input type="checkbox" onchange="actualitzar()"> Cablejat OK</label><br>
+</div>
+
+<script>
+function actualitzar() {
+    let checks = document.querySelectorAll('input[type="checkbox"]');
+    let total = checks.length;
+    let marcats = 0;
+
+    checks.forEach(c => { if (c.checked) marcats++; });
+
+    let percent = Math.round((marcats / total) * 100);
+    document.getElementById("progress").innerText = "Progrés: " + percent + "%";
+}
+
+function marcarTot() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
+    actualitzar();
+}
+
+function reset() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+    actualitzar();
+}
+</script>
+
+</body>
+</html>
